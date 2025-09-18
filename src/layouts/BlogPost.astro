@@ -1,0 +1,153 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    pubDate: string;
+    tags?: string[];
+    readingTime?: string;
+    draft?: boolean;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const { title, description, pubDate, tags, readingTime } = frontmatter;
+
+const formattedDate = new Date(pubDate).toLocaleDateString('fr-FR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<BaseLayout title={`${title} - Blog`} description={description}>
+  <div class="max-w-none">
+    <!-- Navigation retour -->
+    <nav class="mb-8">
+      <a 
+        href="/blog" 
+        class="inline-flex items-center text-gray-400 hover:text-white text-sm transition-colors"
+      >
+        ← retour au blog
+      </a>
+    </nav>
+
+    <!-- En-tête de l'article -->
+    <header class="mb-8 pb-8 border-b border-gray-800">
+      <h1 class="text-3xl md:text-4xl text-white font-bold mb-4 leading-tight">
+        {title}
+      </h1>
+      
+      {description && (
+        <p class="text-xl text-gray-300 mb-6 leading-relaxed">
+          {description}
+        </p>
+      )}
+
+      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+        <time>{formattedDate}</time>
+        {readingTime && (
+          <>
+            <span>•</span>
+            <span>{readingTime} min de lecture</span>
+          </>
+        )}
+      </div>
+
+      {tags && tags.length > 0 && (
+        <div class="flex gap-2 mt-4">
+          {tags.map(tag => (
+            <span class="px-3 py-1 text-xs bg-gray-800 text-gray-300 rounded-full">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Contenu de l'article -->
+    <article class="prose prose-invert prose-gray max-w-none prose-lg">
+      <div class="blog-content">
+        <slot />
+      </div>
+    </article>
+
+    <!-- Pied de l'article -->
+    <footer class="mt-12 pt-8 border-t border-gray-800">
+      <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+        <h3 class="text-lg text-white mb-3">Envie de discuter ?</h3>
+        <p class="text-gray-300 mb-4">
+          Si cet article t'a intéressé ou si tu as des questions, 
+          n'hésite pas à me faire signe !
+        </p>
+        <div class="flex gap-4">
+          <a 
+            href="https://twitter.com/ton-username" 
+            target="_blank"
+            class="text-blue-400 hover:text-blue-300 underline text-sm"
+          >
+            Me contacter sur Twitter →
+          </a>
+          <a 
+            href="/blog" 
+            class="text-gray-400 hover:text-white underline text-sm"
+          >
+            Other articles →
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    .blog-content {
+      @apply text-gray-light leading-relaxed;
+    }
+    
+    .blog-content h2 {
+      @apply text-2xl text-white font-semibold mt-8 mb-4 border-l-4 border-blue-400 pl-4;
+    }
+    
+    .blog-content h3 {
+      @apply text-xl text-gray-lighter font-medium mt-6 mb-3;
+    }
+    
+    .blog-content p {
+      @apply mb-4;
+    }
+    
+    .blog-content code {
+      @apply bg-dark text-green-400 px-2 py-1 rounded text-sm;
+    }
+    
+    .blog-content pre {
+      @apply bg-darker border border-gray rounded-lg p-4 overflow-x-auto mb-6;
+    }
+    
+    .blog-content pre code {
+      @apply bg-transparent text-gray-lighter p-0;
+    }
+    
+    .blog-content blockquote {
+      @apply border-l-4 border-gray-light pl-4 italic text-gray my-6;
+    }
+    
+    .blog-content a {
+      @apply text-blue-400 hover:text-blue-300 underline;
+    }
+    
+    .blog-content ul, .blog-content ol {
+      @apply mb-4 pl-6;
+    }
+    
+    .blog-content li {
+      @apply mb-2;
+    }
+    
+    .blog-content img {
+      @apply rounded-lg border border-gray my-6;
+    }
+  </style>
+</BaseLayout>

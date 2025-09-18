@@ -1,16 +1,47 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+  .slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Reho</h1>
-	</body>
-</html>
+<BaseLayout title="Reho - Developer">
+  <div>
+    <section class="section">
+      <h1>Reho</h1>
+      <p class="subtitle">sysadmin</p>
+    </section>
+
+    {recentPosts.length > 0 && (
+      <section class="section">
+        <h2 class="section-title">recent posts</h2>
+        <div class="post-list">
+          {recentPosts.map(post => (
+            <div class="post-item">
+              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+              <div class="post-meta">
+                {new Date(post.data.pubDate).toLocaleDateString('en-US')}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <h2 class="section-title">current projects</h2>
+      <div class="project">
+        <h3>Spark</h3>
+        <p>'<span class="accent-purple">Siri</span>, turn on optimus'
+      </div>
+      
+      <div class="text-center">
+        <p style="color: #71717a; font-size: 0.875rem; margin-top: 1rem;">+ more projects coming soon...</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

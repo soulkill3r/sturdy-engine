@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+---
+
+<BaseLayout title="Blog - Your Name">
+  <div class="space-y-8">
+    <header>
+      <h1 class="text-2xl text-white mb-4">// blog</h1>
+      <p class="text-neutral-300">
+        My thoughts on development, technologies I'm learning, 
+        and my journey as a computer science student.
+      </p>
+    </header>
+
+    {posts.length === 0 ? (
+      <div class="text-center py-12">
+        <p class="text-neutral-400 mb-4">No posts yet.</p>
+        <p class="text-neutral-500 text-sm">I'm working on content, check back soon! 🚧</p>
+      </div>
+    ) : (
+      <section class="space-y-6">
+        {posts.map((post) => (
+          <article class="border border-neutral-800 rounded-lg p-6 bg-neutral-900">
+            <header class="mb-4">
+              <h2 class="text-xl text-white mb-2">
+                <a href={`/blog/${post.slug}`} class="hover:text-neutral-300">
+                  {post.data.title}
+                </a>
+              </h2>
+              <div class="flex items-center gap-4 text-sm text-neutral-400 mb-3">
+                <time>
+                  {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+                {post.data.readingTime && (
+                  <span>• {post.data.readingTime} min read</span>
+                )}
+              </div>
+              {post.data.tags && (
+                <div class="flex gap-2 mb-3">
+                  {post.data.tags.map((tag) => (
+                    <span class="px-2 py-1 text-xs bg-neutral-800 text-neutral-300 rounded">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </header>
+            
+            {post.data.description && (
+              <p class="text-neutral-300 mb-4">
+                {post.data.description}
+              </p>
+            )}
+            
+            <footer>
+              <a 
+                href={`/blog/${post.slug}`}
+                class="text-blue-400 hover:text-blue-300 text-sm underline"
+              >
+                Read full article →
+              </a>
+            </footer>
+          </article>
+        ))}
+      </section>
+    )}
+
+    <aside class="mt-12 pt-8 border-t border-neutral-800">
+      <div class="text-center">
+        <p class="text-neutral-500 text-sm">
+          Want to be notified of new posts? 
+          <a href="https://twitter.com/your-username" 
+             class="text-blue-400 hover:text-blue-300 underline">
+            Follow me on Twitter
+          </a>
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
